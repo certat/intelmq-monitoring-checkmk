@@ -2,6 +2,7 @@ name: Release the package
 
 on:
   release:
+    types: [published]
 
 jobs:
   build:
