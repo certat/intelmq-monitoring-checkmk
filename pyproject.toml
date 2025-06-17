@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "intelmq_monitoring_checkmk"
+version = "0.6.1"
+description = "Scripts to monitor IntelMQ instances using CheckMK as a report tool"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["intelmq", "importlib_metadata; python_version < '3.8'"]
+# To be compatible with the rest of IntelMQ stuff
+license = { text = "AGPLv3" }
+authors = [{ name = "CERT.at Data & Development Team" }]
+
+[project.urls]
+"Repository" = "https://github.com/certat/intelmq-monitoring-checkmk"
+
+[project.optional-dependencies]
+dev = ["pytest", "tox>=4", "black", "isort", "freezegun", "flake8"]
+
+[project.scripts]
+intelmq-monitor = "intelmq_monitoring_checkmk:run.main"
+monitor-wrap = "intelmq_monitoring_checkmk:wrapper.main"
+
+[tool.setuptools.packages.find]
+include = ["intelmq_monitoring_checkmk*"]
+
+[tool.isort]
+profile = "black"
+

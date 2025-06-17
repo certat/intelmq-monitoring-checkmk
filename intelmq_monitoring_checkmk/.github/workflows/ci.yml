@@ -1,0 +1,82 @@
+name: Running tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests-simple-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Cache pip
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: .cache/pip
+          key: pip-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            pip-cache-${{ runner.os }}-
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Prepare for testing
+        run: |
+          pip install tox tox-gh-actions
+          sudo adduser --disabled-password --gecos "" intelmq
+
+      - name: Run tests
+        run: tox
+
+  tests-matrix-full:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: .cache/pip
+          key: pip-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            pip-cache-${{ runner.os }}-
+
+      - name: Prepare for testing
+        run: |
+          pip install tox tox-gh-actions
+          sudo adduser --disabled-password --gecos "" intelmq
+
+      - name: Run full CI tests
+        run: tox -efull-ci
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.10"
+
+      - name: Install Tox
+        run: pip install tox
+
+      - name: Run linter
+        run: tox -elint
